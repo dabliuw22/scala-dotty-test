@@ -11,6 +11,7 @@ given intOrd as Ord[Int]:
 given Ord[String]:
   def compare(a: String, b: String): Int = if a.length < b.length then -1 else 1
 
+// given listOrd[T](using: Ord[T])  as Ord[List[T]]:
 given listOrd [T: Ord] as Ord[List[T]]:
   def compare(a: List[T], b: List[T]): Int = if a.size < b.size then -1 else 1
 
