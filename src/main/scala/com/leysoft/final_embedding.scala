@@ -42,13 +42,28 @@ object MultSym:
   given MultSym[String]:
     def mult(a: String, b: String): String = s"($a * $b)"
 
+trait DivSym[Repr]:
+  def division(a: Repr, b: Repr): Repr
+
+object DivSym:
+  inline def apply[Repr](using sym: DivSym[Repr]): DivSym[Repr] = sym
+
+  given DivSym[Int]:
+    def division(a: Int, b: Int): Int = a / b
+
+  given DivSym[String]:
+    def division(a: String, b: String): String = s"($a / $b)"
+
 object syntax:
   inline def literal[Repr](x: Int)(using sym: ExpresionSym[Repr]) =  sym.literal(x)
   inline def negative[Repr](e: Repr)(using sym: ExpresionSym[Repr]) = sym.negative(e)
   inline def addition[Repr](a: Repr, b: Repr)(using sym: ExpresionSym[Repr]) = sym.addition(a, b)
   inline def mult[Repr](a: Repr, b: Repr)(using sym: MultSym[Repr]) = sym.mult(a, b)
+  inline def division[Repr: DivSym](a: Repr, b: Repr) = DivSym[Repr].division(a, b)
 
 import syntax._
+
+import scala.util.Try
 
 /**
  * ExpresionSym is the denotational semantics over the semantic domain Repr, the meaning of
@@ -61,6 +76,10 @@ def exp[Repr]: P[Repr] = addition(literal(22), negative(addition(literal(1), lit
 type Q[Repr] = MultSym[Repr] ?=> P[Repr]
 def mul[Repr](a: Repr, b: Repr): Q[Repr] = mult(a, b)
 
+type R[Repr] = DivSym[Repr] ?=> Q[Repr]
+def div[Repr](a: Repr, b: Repr): R[Repr] = division(a, b)
+//
+
 private def eval(exp: Int): Int = exp
 
 private def view(exp: String): String = exp
@@ -70,4 +89,6 @@ object final_embedding extends App {
   println(view(exp))
   println(eval(mul(literal(1), negative(literal(2)))))
   println(view(mul(literal(1), addition(literal(2), negative(literal(4))))))
+  Try { eval(div(mul(literal(1), negative(literal(2))), literal(0))) }
+  println(view(div(mul(literal(1), negative(literal(2))), literal(2))))
 }
