@@ -85,10 +85,10 @@ private def eval(exp: Int): Int = exp
 private def view(exp: String): String = exp
 
 object final_embedding extends App {
-  println(eval(exp))
-  println(view(exp))
-  println(eval(mul(literal(1), negative(literal(2)))))
-  println(view(mul(literal(1), addition(literal(2), negative(literal(4))))))
-  Try { eval(div(mul(literal(1), negative(literal(2))), literal(0))) }
-  println(view(div(mul(literal(1), negative(literal(2))), literal(2))))
+  println(eval(exp[Int]))
+  println(view(exp[String]))
+  println(eval(mul(literal[Int](1), negative(literal[Int](2)))))
+  println(view(mul(literal[String](1), addition[String](literal(2), negative(literal(4))))))
+  Try { eval(div(mul(literal[Int](1), negative(literal[Int](2))), literal[Int](0))) }
+  println(view(div(mul(literal[String](1), negative(literal[String](2))), literal[String](2))))
 }
